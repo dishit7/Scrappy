@@ -15,22 +15,32 @@ def initialize_driver():
     return driver
 
 
-
-def scrape_website(url, title_selector, content_selector):
+def scrape_website(url):
     driver = initialize_driver()
-    driver.get(url)  # Load the website
-
-    # Parse the page content with BeautifulSoup
+    driver.get(url)
+    
+    # Get the page source and parse with BeautifulSoup
     soup = BeautifulSoup(driver.page_source, 'html.parser')
     
-    # Extract title and content based on the CSS selectors
-    title = soup.select_one(title_selector).get_text(strip=True) if soup.select_one(title_selector) else 'No title found'
-    content = soup.select_one(content_selector).get_text(strip=True) if soup.select_one(content_selector) else 'No content found'
+    # Extract title and meta description from the <head>
+    title = soup.title.get_text(strip=True) if soup.title else 'No title found'
+    meta_description = None
+    if soup.head:
+        description_tag = soup.head.find('meta', attrs={'name': 'description'})
+        meta_description = description_tag['content'] if description_tag else 'No meta description found'
     
-    driver.quit()  # Close the driver when done
+    # Extract the body content
+    body_content = soup.body.get_text(  strip=True) if soup.body else 'No body content found'
     
+    driver.quit()  # Close the driver
+
     return {
         'title': title,
-        'content': content
+        'meta_description': meta_description,
+        'body_content': body_content
     }
 
+# Example usage:
+url = 'https://www.amazon.in/gp/bestsellers'
+result = scrape_website(url)
+print(result)
