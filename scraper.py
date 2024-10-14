@@ -9,6 +9,8 @@ def initialize_driver():
     options.add_argument('--headless')  # Headless mode for running without opening the browser window
     options.add_argument('--no-sandbox')
     options.add_argument('--disable-dev-shm-usage')
+    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36")
+
     
     # Initialize the Chrome driver using WebDriver Manager
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
