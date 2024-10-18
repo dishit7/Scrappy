@@ -43,11 +43,11 @@ def generate_embedding(content):
 
         embedding = result['embedding']
         
-        # Include the content in the metadata
+     
         metadata = {
             "title": f"Chunk {i + 1}",
             "source": "scraped_website",
-            "content": chunk  # Add this line
+            "content": chunk   
         }
 
         index.upsert([(f"doc-{i+1}", embedding, metadata)])
@@ -81,6 +81,40 @@ def parse_scraped_data(scraped_data):
     response = model.generate_content(prompt)
     parsed_content = response.text
     generate_embedding(parsed_content)
+
+    
+def generate_query_embedding(query):
+     
+    result = genai.embed_content(
+        model="models/text-embedding-004",
+        content=query,
+        task_type="retrieval_query",
+     )
+
+    print(f"Generated Embedding for query: {str(result['embedding'])[:50]} ... TRIMMED")
+
+ 
+    return result['embedding']
+
+
+def search_similar_content(query_embedding, top_k=2):
+     
+    result = index.query(
+        vector=query_embedding, 
+        top_k=top_k,              
+        include_values=True,      
+        include_metadata=True     
+    )
+ 
+    print(f"Top {top_k} results for the query:")
+    for match in result['matches']:
+        print(f"ID: {match['id']}")
+        print(f"Score: {match['score']}")
+        print(f"Metadata: {match['metadata']}")
+        print(f"Content Summary: {match['metadata'].get('summary', 'No summary available')}")
+        print("\n")
+ 
+    return result['matches']
 
   
      
