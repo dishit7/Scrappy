@@ -80,6 +80,7 @@ def parse_scraped_data(scraped_data):
     """
     response = model.generate_content(prompt)
     parsed_content = response.text
+    print(parsed_content)
     generate_embedding(parsed_content)
 
     

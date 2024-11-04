@@ -9,12 +9,12 @@ def process_user_query(user_query):
 
     return response 
 def main():
-    url = 'https://www.gadgets360.com/news'  # Example URL
+    url = 'https://www.livemint.com/'  # Example URL
     scraped_data = scrape_website(url)
     
     print("Scraped Data:", scraped_data)
     parse_scraped_data(scraped_data)
-    query="what is the latest sports news related to india currently" 
+    query="what are imp latest business news  and any news related to rbi or gold ?" 
     output=process_user_query(query)
     print(output)
     
