@@ -1,23 +1,31 @@
 from dotenv import load_dotenv
-import google.generativeai as genai
 import os
 from pinecone import Pinecone
+import google.generativeai as genai
+from langchain_groq import ChatGroq
 
 
-
+# Load environment variables
 load_dotenv()
-api_key = os.environ.get("GEMINI_API_KEY")
-pinecone_api_key=os.environ.get("PINECONE_API_KEY")
+groq_api_key = os.environ.get("GROQ_API_KEY")
+pinecone_api_key = os.environ.get("PINECONE_API_KEY")
+gemini_api_key = os.environ.get("GEMINI_API_KEY")
+model = genai.GenerativeModel("gemini-1.5-flash")
 
 
- 
+# Configure Pinecone and Gemini
 pc = Pinecone(api_key=pinecone_api_key)
 index = pc.Index("scrappy")
+genai.configure(api_key=gemini_api_key)
 
-print(pinecone_api_key)
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-1.5-flash")
- 
+# Initialize ChatGroq with LLaMA for responses
+llm = ChatGroq(
+    model="llama3-70b-8192",
+    api_key=groq_api_key,
+    temperature=0.0,
+    max_retries=2,
+)
+
 
 def generate_embedding(content):
     max_length = 9000
@@ -29,11 +37,12 @@ def generate_embedding(content):
             split_index = max_length
         content_chunks.append(content[:split_index])
         content = content[split_index:].strip()
-    
+
     if content:
         content_chunks.append(content)
 
     for i, chunk in enumerate(content_chunks):
+        # Generate embedding with Gemini model
         result = genai.embed_content(
             model="models/text-embedding-004",
             content=chunk,
@@ -42,18 +51,15 @@ def generate_embedding(content):
         )
 
         embedding = result['embedding']
-        
-     
+
         metadata = {
             "title": f"Chunk {i + 1}",
             "source": "scraped_website",
-            "content": chunk   
+            "content": chunk
         }
 
         index.upsert([(f"doc-{i+1}", embedding, metadata)])
-
         print(f"Upserted embedding for chunk {i + 1}: {str(embedding)[:50]} ... TRIMMED")
-
 
 def parse_scraped_data(scraped_data):
     prompt = f"""
@@ -83,30 +89,29 @@ def parse_scraped_data(scraped_data):
     print(parsed_content)
     generate_embedding(parsed_content)
 
-    
+ 
+
 def generate_query_embedding(query):
-     
+    # Generate query embedding with Gemini
     result = genai.embed_content(
         model="models/text-embedding-004",
         content=query,
-        task_type="retrieval_query",
-     )
+        task_type="retrieval_query"
+    )
 
-    print(f"Generated Embedding for query: {str(result['embedding'])[:50]} ... TRIMMED")
-
- 
-    return result['embedding']
+    embedding = result['embedding']
+    print(f"Generated Embedding for query: {str(embedding)[:50]} ... TRIMMED")
+    return embedding
 
 
 def search_similar_content(query_embedding, top_k=2):
-     
     result = index.query(
-        vector=query_embedding, 
-        top_k=top_k,              
-        include_values=True,      
-        include_metadata=True     
+        vector=query_embedding,
+        top_k=top_k,
+        include_values=False,
+        include_metadata=True
     )
- 
+
     print(f"Top {top_k} results for the query:")
     for match in result['matches']:
         print(f"ID: {match['id']}")
@@ -114,12 +119,13 @@ def search_similar_content(query_embedding, top_k=2):
         print(f"Metadata: {match['metadata']}")
         print(f"Content Summary: {match['metadata'].get('summary', 'No summary available')}")
         print("\n")
- 
+
     return result['matches']
 
 
 def llm_query_response(query, context):
-    print(f"the context is {context} and the query is {query}")
+    print(f"length of the context is {len(context)}")
+    print(f"the context is {context}")
     prompt = f"""
     User query: {query}
 
@@ -136,11 +142,5 @@ def llm_query_response(query, context):
     Response:
     """
     
-    response = model.generate_content(prompt)
-    return response.text
-
-
-  
-     
-
-
+    response = llm.invoke([("system", prompt)])
+    return response.content
