@@ -41,11 +41,8 @@ class ScrapedContent:
     def __init__(self, user_id, url, title, content, summary, pinecone_id):
         self.user_id = user_id
         self.url = url
-        self.title = title
-        self.content = content
         self.summary = summary
-        self.pinecone_id = pinecone_id
-        self.created_at = datetime.utcnow()
+        self.created_at = datetime.now()
 
     @staticmethod
     def save_scraped_content(scraped_data):
