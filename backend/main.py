@@ -1,5 +1,5 @@
-from scraper import scrape_website
-from llm_integration import parse_scraped_data,generate_query_embedding,llm_query_response,search_similar_content
+from backend.app.services.scraper import scrape_website
+from backend.app.services.llm_integration import parse_scraped_data,generate_query_embedding,llm_query_response,search_similar_content
  
 def process_user_query(user_query):
      
@@ -9,12 +9,12 @@ def process_user_query(user_query):
 
     return response 
 def main():
-    url = 'https://www.livemint.com/'  # Example URL
-    scraped_data = scrape_website(url)
+   # url = 'https://www.livemint.com/'  # Example URL
+  #  scraped_data = scrape_website(url)
     
-    print("Scraped Data:", scraped_data)
-    parse_scraped_data(scraped_data)
-    query="what are imp latest business news  and any news related to rbi or gold ?" 
+   # print("Scraped Data:", scraped_data)
+   # parse_scraped_data(scraped_data)
+    query="latest business news  " 
     output=process_user_query(query)
     print(output)
     

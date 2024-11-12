@@ -1,28 +1,31 @@
-from flask import Flask, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import jwt
 import datetime
 import os
 from dotenv import load_dotenv
-from backend.app.db.models import User  
+from app.db.models import User  
+
 
 load_dotenv()
 
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-
+# Initialize the auth blueprint
+auth_blueprint = Blueprint("auth", __name__)
+SECRET_KEY=os.getenv("SECRET_KEY")
+# Helper function to generate JWT token
 def generate_token(user_id):
     token = jwt.encode(
         {
             'user_id': str(user_id),
             'exp': datetime.datetime.now() + datetime.timedelta(hours=24)
         },
-        app.config['SECRET_KEY'],
+        SECRET_KEY,
         algorithm="HS256"
     )
     return token
 
+# Decorator to enforce authentication
 def auth_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -33,7 +36,7 @@ def auth_required(f):
 
         try:
             token = token.split(" ")[1]
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
             request.user_id = data['user_id']
         except jwt.ExpiredSignatureError:
             return jsonify({"message": "Token has expired!"}), 403
@@ -44,7 +47,8 @@ def auth_required(f):
 
     return decorated
 
-@app.route('/register', methods=['POST'])
+# Route for user registration
+@auth_blueprint.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username')
@@ -59,13 +63,14 @@ def register():
         "username": username,
         "email": email,
         "hashed_password": hashed_password,
-        "created_at": datetime.now()
+        "created_at": datetime.datetime.now()
     }
     user_id = User.create_user(user_data).inserted_id
 
     return jsonify({"message": "User registered successfully.", "user_id": str(user_id)}), 201
 
-@app.route('/login', methods=['POST'])
+# Route for user login
+@auth_blueprint.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
     email = data.get('email')
@@ -78,7 +83,8 @@ def login():
     token = generate_token(user['_id'])
     return jsonify({"message": "Login successful.", "token": token}), 200
 
-@app.route('/protected', methods=['GET'])
+# Protected route example
+@auth_blueprint.route('/protected', methods=['GET'])
 @auth_required
 def protected():
     return jsonify({"message": "Access granted to protected route.", "user_id": request.user_id}), 200
