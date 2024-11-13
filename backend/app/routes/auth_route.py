@@ -36,7 +36,7 @@ def auth_required(f):
 
         try:
             token = token.split(" ")[1]
-            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+            data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
             request.user_id = data['user_id']
         except jwt.ExpiredSignatureError:
             return jsonify({"message": "Token has expired!"}), 403

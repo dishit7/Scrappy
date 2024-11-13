@@ -5,28 +5,31 @@ from flask import Blueprint, jsonify, request
 from app.services.scraper import scrape_website
 from app.db.models import ScrapedContent
 from app.services.llm_integration import parse_scraped_data
+from app.routes.auth_route import auth_required  # Import the auth_required decorator to ensure authentication
 
 # Create a Blueprint
 scrape_blueprint = Blueprint("scrape", __name__)
 
 @scrape_blueprint.route("/scrape", methods=["POST"])
+@auth_required  # Use the decorator to protect this route
 def scrape():
     data = request.json
     url = data.get("url")
-    user_id = data.get("user_id")
 
     if not url:
         return jsonify({"error": "URL is required"}), 400
-    if not user_id:
-        return jsonify({"error": "User ID is required"}), 400
 
     try:
+        # Use the user_id from the decoded token, which is available as request.user_id
+        user_id = request.user_id
+
+        # Perform the scraping logic
         scraped_data = scrape_website(url)
         scraped_content = scraped_data.get("body_content")
         summary = parse_scraped_data(scraped_content)
 
         scraped_content_data = {
-            "user_id": ObjectId(user_id),
+            "user_id": ObjectId(user_id),  # Save the user_id from the token
             "url": url,
             "content": scraped_content,
             "summary": summary,
