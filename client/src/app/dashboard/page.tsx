@@ -1,5 +1,6 @@
 "use client"
-import { Copy } from "lucide-react";
+import Sidebar from "@/components/ui/sidebar";
+import { Copy,   } from "lucide-react";
 import { useState } from "react";
 
 interface ScrapedData{
@@ -53,12 +54,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6">
-      <h1 className="text-3xl font-semibold text-center">Dashboard</h1>
+      <div className="max-w-4xl mx-auto p-6 space-y-6">
+          <Sidebar />
+      <h1 className="text-3xl font-semibold text-center gradient-text">Dashboard</h1>
       
       <form onSubmit={handleScrape} className="space-y-4">
         <div className="flex flex-col">
-          <label htmlFor="url" className="font-medium text-lg">Enter URL:</label>
+          <label htmlFor="url" className="font-medium text-lg  gradient-text">Enter URL:</label>
           <input
             type="text"
             id="url"
@@ -70,7 +72,7 @@ const Dashboard = () => {
         </div>
         <button
           type="submit"
-          className="w-full py-2 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full py-2  text-white font-semibold rounded-md  gradient-text "
         >
           Scrape
         </button>
@@ -82,7 +84,7 @@ const Dashboard = () => {
               <div className="flex" style={ {width:"1500px"}}>
          <div className="p-4 bg-gray-100 rounded-md border border-black-300  w-96 h-8 mt-6 overflow-y-scroll" style={{height:"596px"}}>
                 <div className="flex justify-between">
-                  <div className="text-xl font-semibold mb-4">Scraped Data     </div>
+                  <div className="text-xl font-semibold mb-4  gradient-text"  >Scraped Data     </div>
                       <div className="p-2"><Copy /></div>
                      
                       </div>
@@ -95,9 +97,9 @@ const Dashboard = () => {
                       width: "750px",
                       height:"600px"
                   }}>
-                      <h2 className="text-xl font-semibold text-center ">Summary</h2>
+                      <h2 className="text-xl font-semibold text-center  gradient-text">Summary</h2>
                      
-                      <pre className="text-gray-800 whitespace-pre-wrap overflow-y-scroll border border-gray-300 p-4 rounded-md " style={{ height: "589px" }} >
+                      <pre className="text-gray-800 whitespace-pre-wrap overflow--scroll border border-gray-300 p-4 rounded-md " style={{ height: "589px" }} >
             {scrapedData.summary}
           </pre>
                   </div>
