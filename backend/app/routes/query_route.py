@@ -5,20 +5,22 @@ from app.services.llm_integration import (
     search_similar_content,
     llm_query_response,
 )
+from  app.routes.auth_route import auth_required
 
 query_blueprint = Blueprint("query", __name__)
-
 @query_blueprint.route("/query", methods=["POST"])
+#@auth_required 
+
 def query():
     data = request.json
     query = data.get("query")
-    user_id = data.get("user_id")
+   # user_id = request.user_id
 
     # Check if query and user_id are present
     if not query:
         return jsonify({"error": "Query is required"}), 400
-    if not user_id:
-        return jsonify({"error": "User ID is required"}), 400
+   # if not user_id:
+       # return jsonify({"error": "User ID is required"}), 400
 
     try:
         # Step 1: Generate the embedding for the query

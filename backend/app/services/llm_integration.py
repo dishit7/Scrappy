@@ -124,27 +124,27 @@ def search_similar_content(query_embedding, top_k=2):
     return result['matches']
 
 
-# def llm_query_response(query, context):
-#     print(f"length of the context is {len(context)}")
-#     print(f"the context is {context}")
-#     prompt = f"""
-#     User query: {query}
-
-#     Context:
-#     {context}
-
-#     Instructions:
-#     1. Analyze the user's query and the provided context.
-#     2. Provide a detailed, accurate response based primarily on the given context.
-#     3. If the context doesn't contain enough information, state that clearly.
-#     4. Use a clear and concise writing style.
-#     5. If appropriate, structure the response with subheadings or bullet points.
-
-#     Response:
-#     """
-    
-#     response = llm.invoke([("system", prompt)])
-#     return response.content
-
 def llm_query_response(query, context):
-    return {"query": query, "response": "Dummy LLM response"}
+    print(f"length of the context is {len(context)}")
+    print(f"the context is {context}")
+    prompt = f"""
+    User query: {query}
+
+    Context:
+    {context}
+
+    Instructions:
+    1. Analyze the user's query and the provided context.
+    2. Provide a detailed, accurate response based primarily on the given context.
+    3. If the context doesn't contain enough information, state that clearly.
+    4. Use a clear and concise writing style.
+    5. If appropriate, structure the response with subheadings or bullet points.
+
+    Response:
+    """
+    
+    response = llm.invoke([("system", prompt)])
+    return response.content
+
+#def llm_query_response(query, context):
+ #   return {"query": query, "response": "Dummy LLM response"}
