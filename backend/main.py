@@ -1,22 +1,21 @@
-from backend.app.services.scraper import scrape_website
-from backend.app.services.llm_integration import parse_scraped_data,generate_query_embedding,llm_query_response,search_similar_content
- 
-def process_user_query(user_query):
-     
-    query_embedding = generate_query_embedding(user_query)
-    context = search_similar_content(query_embedding)
-    response = llm_query_response(user_query, context)
+# app.py
+from flask import Flask
+from flask_cors import CORS
+from app.routes.scrape_route import scrape_blueprint  # Directly import the blueprint
+from app.routes.query_route import query_blueprint
+from app.routes.auth_route import auth_blueprint
+app = Flask(__name__)
+CORS(app)
 
-    return response 
-def main():
-   # url = 'https://www.livemint.com/'  # Example URL
-  #  scraped_data = scrape_website(url)
-    
-   # print("Scraped Data:", scraped_data)
-   # parse_scraped_data(scraped_data)
-    query="latest business news  " 
-    output=process_user_query(query)
-    print(output)
-    
+# Register the Blueprint
+app.register_blueprint(auth_blueprint, url_prefix="/auth")
+app.register_blueprint(scrape_blueprint, url_prefix="/api")
+app.register_blueprint(query_blueprint, url_prefix="/api")
+
+
+@app.route("/")
+def home():
+    return "Welcome to the API!"
+
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
