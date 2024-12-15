@@ -6,12 +6,12 @@ import { ChevronDown, BugIcon as Spider, Database, BarChart3 } from 'lucide-reac
 import { Input } from '@/components/ui/input'
 import Login from '@/components/ui/Auth/Login'
 import Signup from '@/components/ui/Auth/Signup'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
   
 export default function LandingPage() {
   const [isOpen, setIsOpen] = useState(false)
   const [hasAccount,setHasAccount]=useState(false)
-
+  const router=useRouter()
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Hero Section */}
@@ -89,7 +89,7 @@ export default function LandingPage() {
           </div>
         ) : (
           <div>
-              <Signup onSuccess={() => redirect("/dashboard")}/>
+              <Signup onSuccess={() => router.push("/dashboard")}/>
             <p className="text-center text-gray-400 mt-4">
               Already have an account?{" "}
               <button 

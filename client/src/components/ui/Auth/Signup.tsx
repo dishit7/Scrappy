@@ -25,7 +25,7 @@ const Signup = ({onSuccess}:SignupProps) => {
       });
 
       const data = await response.json();
-      if (response.ok) {
+      if (data.user_id) {
         setMessage("User registered successfully.");
         onSuccess()
         
@@ -33,6 +33,7 @@ const Signup = ({onSuccess}:SignupProps) => {
         setMessage(data.message || "Error occurred during registration.");
       }
     } catch (error) {
+      console.log(error)
       setMessage("Failed to register. Please try again.");
     }
   };
