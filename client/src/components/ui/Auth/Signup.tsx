@@ -6,7 +6,7 @@ interface SignupProps {
   onSuccess: () => void;
 }
 
-const Signup = ({ onSuccess }: SignupProps) => {
+const Signup = ({onSuccess}:SignupProps) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,7 +16,7 @@ const Signup = ({ onSuccess }: SignupProps) => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/register`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,7 +27,8 @@ const Signup = ({ onSuccess }: SignupProps) => {
       const data = await response.json();
       if (response.ok) {
         setMessage("User registered successfully.");
-        onSuccess();
+        onSuccess()
+        
       } else {
         setMessage(data.message || "Error occurred during registration.");
       }

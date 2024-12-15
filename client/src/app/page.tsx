@@ -5,9 +5,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { ChevronDown, BugIcon as Spider, Database, BarChart3 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import Login from '@/components/ui/Auth/Login'
- 
+import Signup from '@/components/ui/Auth/Signup'
+import { redirect } from 'next/navigation'
+  
 export default function LandingPage() {
   const [isOpen, setIsOpen] = useState(false)
+  const [hasAccount,setHasAccount]=useState(false)
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
@@ -69,13 +72,36 @@ export default function LandingPage() {
         </div>
       </section>
 
-
-      <section>
-        
-       <Login />
-
-
-          </section>
+ <section>
+        {/* Toggle between Login and Signup */}
+        {hasAccount ? (
+          <div>
+            <Login />
+            <p className="text-center text-gray-400 mt-4">
+              Don't have an account?{" "}
+              <button 
+                className="text-orange-500 hover:text-orange-600"
+                onClick={() => setHasAccount(false)}
+              >
+                Sign up
+              </button>
+            </p>
+          </div>
+        ) : (
+          <div>
+              <Signup onSuccess={() => redirect("/dashboard")}/>
+            <p className="text-center text-gray-400 mt-4">
+              Already have an account?{" "}
+              <button 
+                className="text-orange-500 hover:text-orange-600"
+                onClick={() => setHasAccount(true)}
+              >
+                Log in
+              </button>
+            </p>
+          </div>
+        )}
+      </section>
       {/* Pricing Section */}
       <section className="container mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold mb-8 text-center text-orange-500">Pricing Plans</h2>
