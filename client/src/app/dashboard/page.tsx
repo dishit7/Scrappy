@@ -38,7 +38,7 @@ const Dashboard = () => {
             "Authorization": `Bearer ${token}`,  // Send token in Authorization header
 
         },
-        body: JSON.stringify({ url, user_id: userId }),
+        body: JSON.stringify({ url }),
       });
 
       const result = await response.json();
